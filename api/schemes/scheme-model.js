@@ -1,4 +1,16 @@
-function find() { // EXERCISE A
+const db = require('../../data/db-config');
+
+async function find() { // EXERCISE A
+
+  const schemes = await db('schemes as sc')
+    .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
+    .groupBy('sc.scheme_id')
+    .count('st.step_id as number_of_steps')
+    .select('sc.scheme_id', 'sc.scheme_name')
+    .orderBy('sc.scheme_id', 'asc')
+
+  return schemes
+
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
     What happens if we change from a LEFT join to an INNER join?
@@ -17,7 +29,22 @@ function find() { // EXERCISE A
   */
 }
 
-function findById(scheme_id) { // EXERCISE B
+async function findById(scheme_id) { // EXERCISE B
+  
+  const scheme = await db('schemes as sc')
+    .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
+    .where('sc.scheme_id', scheme_id)
+
+  const stepsByScheme = await db('steps as st')
+    .where('st.scheme_id', scheme_id)
+    .orderBy('st.step_number', 'asc')
+
+  return {
+    scheme_id: scheme[0].scheme_id,
+    scheme_name: scheme[0].scheme_name,
+    steps: stepsByScheme
+  }
+
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -85,7 +112,15 @@ function findById(scheme_id) { // EXERCISE B
   */
 }
 
-function findSteps(scheme_id) { // EXERCISE C
+async function findSteps(scheme_id) { // EXERCISE C
+  const stepsByScheme = await db('steps as st')
+  .leftJoin('schemes as sc', 'st.scheme_id', '=', 'sc.scheme_id')
+  .where('st.scheme_id', scheme_id)
+  .orderBy('st.step_number', 'asc')
+  .select('step_id', 'step_number', 'scheme_name', 'instructions')
+
+  return stepsByScheme
+
   /*
     1C- Build a query in Knex that returns the following data.
     The steps should be sorted by step_number, and the array
