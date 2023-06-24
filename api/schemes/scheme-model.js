@@ -143,11 +143,32 @@ async function findSteps(scheme_id) { // EXERCISE C
   */
 }
 
-function add(scheme) { // EXERCISE D
-  /*
-    1D- This function creates a new scheme and resolves to _the newly created scheme_.
-  */
+async function add(scheme) { // EXERCISE D
+  const [newSchemeId] = await db('schemes').insert(scheme)
+
+  const newScheme = await db('schemes').where('scheme_id', newSchemeId)
+
+
+  return newScheme
+
 }
+
+
+
+
+/*
+
+function add(user) {
+  return db('users')
+    .insert(user)
+    .then(([id]) => { // eslint-disable-line
+      return findById(id)
+    })
+}
+
+*/
+
+
 
 function addStep(scheme_id, step) { // EXERCISE E
   /*
