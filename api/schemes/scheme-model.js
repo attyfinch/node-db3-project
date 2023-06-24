@@ -145,15 +145,11 @@ async function findSteps(scheme_id) { // EXERCISE C
 
 async function add(scheme) { // EXERCISE D
   const [newSchemeId] = await db('schemes').insert(scheme)
-
-  const newScheme = await db('schemes').where('scheme_id', newSchemeId)
-
+  const [newScheme] = await db('schemes').where('scheme_id', newSchemeId)
 
   return newScheme
 
 }
-
-
 
 
 /*
@@ -168,9 +164,14 @@ function add(user) {
 
 */
 
+// scheme 8
+// http post :9000/api/schemes/8/steps instructions='get sleep' step_number=3
 
+async function addStep(scheme_id, step) { // EXERCISE E
+  await db('steps').insert({...step, scheme_id})
+  
+  return findSteps(scheme_id)
 
-function addStep(scheme_id, step) { // EXERCISE E
   /*
     1E- This function adds a step to the scheme with the given `scheme_id`
     and resolves to _all the steps_ belonging to the given `scheme_id`,
